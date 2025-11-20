@@ -1,0 +1,21 @@
+POST index-name/_search
+{
+  "query": {
+    "script_score": {
+      "query": {
+        "match_all": {}
+      },
+      "script": {
+        "source": """
+          double threat = doc['threat_level'].size() > 0 ? doc['threat_level'].value : 0;
+          double anomaly = doc['anomaly_score'].size() > 0 ? doc['anomaly_score'].value : 0;
+
+          // Weighted scoring formula
+          double score = (threat * 1.5) + (anomaly * 2);
+
+          return score;
+        """
+      }
+    }
+  }
+}
